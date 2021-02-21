@@ -7,7 +7,8 @@ class User:
     create_user_parser.add_argument("username", required=True, help="Enter your username")
     create_user_parser.add_argument("password", required=True, help="Enter your password")
 
-    def __init__(self, username, password):
+    def __init__(self, id, username, password):
+        self.id = id
         self.username = username
         self.password = password
 
@@ -19,6 +20,7 @@ class User:
         row = cursor.fetchone()
         connection.commit()
         connection.close()
+        print(row)
         if row:
             return cls(*row)
 
@@ -28,6 +30,7 @@ class User:
         cursor = connection.cursor()
         cursor.execute('SELECT * FROM users WHERE user_id=?', (user_id,))
         row = cursor.fetchone()
+        print(row)
         connection.commit()
         connection.close()
         if row:
@@ -36,6 +39,7 @@ class User:
     @classmethod
     def add(cls, new_user):
         user_existence = User.find_by_username(new_user.get('username'))
+        print(new_user)
         if user_existence:
             return "User already exists"
         connection = sqlite3.connect('Health_Data.db')

@@ -1,8 +1,10 @@
 import sqlite3
+from flask_jwt import jwt_required
 from models.vitals import Patient_info
 
 
 class from_db_to_api(Patient_info):
+    @jwt_required()
     def post(self, patient_id):
         patient_vitals = Patient_info.health_info.parse_args()
         Patient_info.insert(patient_id, patient_vitals)
@@ -16,6 +18,7 @@ class from_db_to_api(Patient_info):
             return "Patient that you are searching does not exist"
 
     # delete function deletes last entry of vital signs to undo invalid data entry
+    @jwt_required()
     def delete(self, patient_id):
         connection = sqlite3.connect("Health_data.db")
         cursor = connection.cursor()
@@ -26,6 +29,7 @@ class from_db_to_api(Patient_info):
         return "Last entry has been deleted"
 
     # put function only changes last entry of vital signs
+    @jwt_required()
     def put(self, patient_id):
         patient_vitals = Patient_info.health_info.parse_args()
         connection = sqlite3.connect("Health_data.db")
