@@ -1,9 +1,16 @@
-import sqlite3
 from flask_restful import reqparse
+from db import db
 
 
-class User:
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String)
+    password = db.Column(db.String)
+
     create_user_parser = reqparse.RequestParser()
+    create_user_parser.add_argument("id", help="Enter your id")
     create_user_parser.add_argument("username", required=True, help="Enter your username")
     create_user_parser.add_argument("password", required=True, help="Enter your password")
 
@@ -14,38 +21,12 @@ class User:
 
     @classmethod
     def find_by_username(cls, username):
-        connection = sqlite3.connect('Health_Data.db')
-        cursor = connection.cursor()
-        cursor.execute('SELECT * FROM users WHERE username=?', (username,))
-        row = cursor.fetchone()
-        connection.commit()
-        connection.close()
-        print(row)
-        if row:
-            return cls(*row)
+        return cls.query.filter_by(username=username).first()
 
     @classmethod
     def find_by_id(cls, user_id):
-        connection = sqlite3.connect('Health_Data.db')
-        cursor = connection.cursor()
-        cursor.execute('SELECT * FROM users WHERE user_id=?', (user_id,))
-        row = cursor.fetchone()
-        print(row)
-        connection.commit()
-        connection.close()
-        if row:
-            return cls(*row)
+        return cls.query.filter_by(id=user_id).first()
 
-    @classmethod
-    def add(cls, new_user):
-        user_existence = User.find_by_username(new_user.get('username'))
-        print(new_user)
-        if user_existence:
-            return "User already exists"
-        connection = sqlite3.connect('Health_Data.db')
-        cursor = connection.cursor()
-        cursor.execute('INSERT INTO users(username, password) VALUES(?,?)',
-                       (new_user["username"], new_user["password"]))
-        connection.commit()
-        connection.close()
-        return "New user has been added"
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
