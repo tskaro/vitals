@@ -23,7 +23,4 @@ api.add_resource(from_db_to_api, '/vitals/<int:patient_id>')
 api.add_resource(User_registration, '/registration')
 
 if __name__ == '__main__':
-    from db import db
-
-    db.init_app(app)
     app.run(debug=True, port=500)
