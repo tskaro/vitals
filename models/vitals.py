@@ -34,7 +34,7 @@ class Patient_info(db.Model):
 
     @classmethod
     def last_entry(cls, patient_id):
-        return cls.query.filter_by(patient_id=patient_id).order_by(cls.row_id.desc()).first()
+        return cls.query.filter_by(patient_id=patient_id).order_by(cls.id.desc()).first()
 
     def save_to_db(self):
         db.session.add(self)
